@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="tw.imonkey.e4go.DeviceTCActivity"
+    tools:showIn="@layout/activity_devicetc">
+
+    <TextView
+        android:id="@+id/textViewAtWork1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上班1\n8:00"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:layout_marginLeft="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="123dp" />
+
+    <TextView
+        android:id="@+id/textViewOffWork1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:text="下班1"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewAtWork1"
+        app:layout_constraintLeft_toRightOf="@+id/textViewAtWork1" />
+
+    <TextView
+        android:id="@+id/textViewAtWork2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:text="上班2"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewOffWork1"
+        app:layout_constraintLeft_toRightOf="@+id/textViewOffWork1" />
+
+    <TextView
+        android:id="@+id/textViewOffWork2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:text="下班2\n17:00"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewAtWork2"
+        app:layout_constraintLeft_toRightOf="@+id/textViewAtWork2" />
+
+    <TextView
+        android:id="@+id/textViewOverTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="加班"
+        android:textSize="18sp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/textViewOverTimeEnd"
+        android:layout_marginRight="8dp"
+        app:layout_constraintHorizontal_bias="0.767"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="76dp" />
+
+    <TextView
+        android:id="@+id/textViewOverTimeEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="結束"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewOverTime"
+        tools:layout_editor_absoluteX="198dp" />
+
+    <ImageView
+        android:id="@+id/imageViewQRTC"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.032"
+        app:srcCompat="@drawable/mr_ic_media_route_connecting_light" />
+
+</android.support.constraint.ConstraintLayout>
