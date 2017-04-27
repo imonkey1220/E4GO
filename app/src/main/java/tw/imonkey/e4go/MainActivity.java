@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -58,6 +59,23 @@ public class MainActivity extends Activity {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Taipei"));
         SharedPreferences settings = getSharedPreferences(devicePrefs, Context.MODE_PRIVATE);
         myDeviceId = settings.getString("deviceId",null);
+
+        // If a notification message is tapped, any data accompanying the notification
+        // message is available in the intent extras. In this sample the launcher
+        // intent is fired when the notification is tapped, so any accompanying data would
+        // be handled here. If you want a different intent fired, set the click_action
+        // field of the notification message to the desired intent. The launcher intent
+        // is used when no click_action is specified.
+        //
+        // Handle possible data accompanying notification message.
+        // [START handle_data_extras]
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d("getIntent", "Key: " + key + " Value: " + value);
+            }
+        }
+        // [END handle_data_extras]
         memberCheck();
     }
 

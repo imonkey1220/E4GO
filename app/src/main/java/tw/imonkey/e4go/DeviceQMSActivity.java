@@ -69,7 +69,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
         init();
         CountClient();
         CountServer();
-        mFriends=FirebaseDatabase.getInstance().getReference("/SHOP/"+deviceId+"/friend/");
+        mFriends=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId+"/friend/");
         mFriends.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

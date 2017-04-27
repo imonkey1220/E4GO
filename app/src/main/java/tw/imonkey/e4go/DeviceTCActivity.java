@@ -47,6 +47,18 @@ public class DeviceTCActivity extends AppCompatActivity {
 
         init();
         TCSettings();
+        mFriends=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId+"/friend/");
+        mFriends.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                friends.clear();
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    friends.add(childSnapshot.getValue().toString());
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     @Override

@@ -44,6 +44,15 @@ public class DeviceBossActivity extends AppCompatActivity {
                         });
 
         }
+
+    public void onClickAddThingsDevice(View v) {
+
+        Intent intent = new Intent(DeviceBossActivity.this, AddThingsDeviceActivity.class);
+        startActivity(intent);
+        finish();
+
+    }
+
     }
 
 

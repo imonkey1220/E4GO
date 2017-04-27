@@ -12,12 +12,16 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Arrays;
 
+
 public class LoginActivity extends AppCompatActivity {
     //    private static final String TAG = LoginActivity.class.getSimpleName();
     //   private static final String PATH_TOS = "";
     Button loginButton;
     private FirebaseAuth auth;
     private static final int RC_SIGN_IN = 200;
+
+    String memberEmail,myDeviceId,token;//deviceId=topicId=ShopId
+    public static final String devicePrefs = "devicePrefs";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

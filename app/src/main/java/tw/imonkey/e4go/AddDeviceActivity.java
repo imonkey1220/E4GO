@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -33,8 +35,8 @@ public class AddDeviceActivity extends AppCompatActivity {
     private static final int RC_CHOOSE_PHOTO = 101;
     //private static final int RC_IMAGE_PERMS = 102;
     StorageReference mImageRef;
-    DatabaseReference mAddDevice ,mAddMaster;
-    String memberEmail,deviceId ;// deviceId=shopId=topics_id
+    DatabaseReference mUserFile, mAddDevice ,mAddMaster;
+    String memberEmail,deviceId ,token;// deviceId=shopId=topics_id
     ImageView imageViewAddDevice;
     Uri selectedImage ;
     EditText editTextAddCompanyId;
@@ -71,7 +73,7 @@ public class AddDeviceActivity extends AppCompatActivity {
             addMaster.put("topics_id",deviceId) ;
             mAddMaster.child(deviceId).setValue(addMaster);
 
-            mAddDevice = FirebaseDatabase.getInstance().getReference("/SHOP/"+deviceId);
+            mAddDevice = FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId);
             Map<String, Object> addDevice = new HashMap<>();
             addDevice.put("companyId",companyId);
             addDevice.put("device",device);
@@ -81,8 +83,21 @@ public class AddDeviceActivity extends AppCompatActivity {
             addDevice.put("timeStamp",ServerValue.TIMESTAMP);
             addDevice.put("topics_id",deviceId) ;
             mAddDevice.setValue(addDevice);
+
+
+            mUserFile= FirebaseDatabase.getInstance().getReference("/USER/" +memberEmail.replace(".", "_"));
+            token = FirebaseInstanceId.getInstance().getToken();
+            Map<String, Object> addUser = new HashMap<>();
+            addUser.put("memberEmail",memberEmail);
+            addUser.put("deviceId",deviceId);
+            addUser.put("token",token);
+            addUser.put("timeStamp", ServerValue.TIMESTAMP);
+            mUserFile.setValue(addUser);
+
+            FirebaseMessaging.getInstance().subscribeToTopic(deviceId);
             SharedPreferences.Editor editor = getSharedPreferences(devicePrefs, Context.MODE_PRIVATE).edit();
             editor.putString("deviceId",deviceId);
+            editor.putString("memberEmail",memberEmail);
             editor.apply();
             if (selectedImage!=null) {
                 uploadPhoto(selectedImage);
