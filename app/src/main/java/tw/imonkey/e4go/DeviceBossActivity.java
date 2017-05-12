@@ -1,4 +1,4 @@
-package tw.imonkey.e4go;// deviceType 主機
+package tw.imonkey.e4go;
 
 import android.content.Intent;
 import android.os.Bundle;

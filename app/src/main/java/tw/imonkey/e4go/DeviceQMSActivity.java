@@ -114,7 +114,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
                                 public void onDataChange(DataSnapshot snapshot) {
                                     if (snapshot.getValue() != null) {
                                         Device device = snapshot.getValue(Device.class);
-                                        DatabaseReference mInvitation = FirebaseDatabase.getInstance().getReference("/friend/" + editTextAddFriendEmail.getText().toString().replace(".", "_") + "/" + deviceId);
+                                        DatabaseReference mInvitation = FirebaseDatabase.getInstance().getReference("/FUI/" + editTextAddFriendEmail.getText().toString().replace(".", "_") + "/" + deviceId);
                                         mInvitation.setValue(device);
                                         Toast.makeText(DeviceQMSActivity.this, "已寄出邀請函(有效時間10分鐘)", Toast.LENGTH_LONG).show();
                                     }
@@ -186,7 +186,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
         }
 
         if (master) {
-            mDevice = FirebaseDatabase.getInstance().getReference("/master/" + memberEmail.replace(".", "_") + "/" + deviceId);
+            mDevice = FirebaseDatabase.getInstance().getReference("/FUI/" + memberEmail.replace(".", "_") + "/" + deviceId);
             mDevice.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -207,7 +207,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
 
         } else {
             resetCount.setVisibility(View.INVISIBLE);
-            mDevice = FirebaseDatabase.getInstance().getReference("/friend/" + memberEmail.replace(".", "_") + "/" + deviceId);
+            mDevice = FirebaseDatabase.getInstance().getReference("/FUI/" + memberEmail.replace(".", "_") + "/" + deviceId);
             mDevice.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -257,7 +257,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
     }
     private void CountClient(){
         lastClientNo=(TextView) findViewById(R.id.textViewLastClientNo);
-        mCountClient= FirebaseDatabase.getInstance().getReference("/QMS/"+deviceId+"/CLIENT");
+        mCountClient= FirebaseDatabase.getInstance().getReference("/LOG/QMS/"+deviceId+"/CLIENT");
         mCountClient.limitToLast(1).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -303,7 +303,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
     private void CountServer(){
         lastServerNo=(TextView) findViewById(R.id.textViewLastServerNo);
         EDServerDeviceNo= (EditText) (findViewById(R.id.editTextServerDeviceNo));
-        mCountServer= FirebaseDatabase.getInstance().getReference("/QMS/"+deviceId+"/SERVER");
+        mCountServer= FirebaseDatabase.getInstance().getReference("/LOG/QMS/"+deviceId+"/SERVER");
         mCountServer.limitToLast(1).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -371,14 +371,14 @@ public class DeviceQMSActivity extends AppCompatActivity {
     }
 
     private void myDeviceIdLive(){
-        mCountServerLive=FirebaseDatabase.getInstance().getReference("/QMS/"+deviceId+"/connection");
+        mCountServerLive=FirebaseDatabase.getInstance().getReference("/LOG/QMS/"+deviceId+"/connection");
         mCountServerLive.setValue(true);
         mCountServerLive.onDisconnect().setValue(null);
 
-        presenceRef = FirebaseDatabase.getInstance().getReference("/master/"+memberEmail.replace(".", "_")+"/"+deviceId+"/connection");
+        presenceRef = FirebaseDatabase.getInstance().getReference("/FUI/"+memberEmail.replace(".", "_")+"/"+deviceId+"/connection");
         presenceRef.setValue(true);
         presenceRef.onDisconnect().setValue(null);
-        lastOnlineRef =FirebaseDatabase.getInstance().getReference("/master/"+memberEmail.replace(".", "_")+"/"+deviceId+"/lastOnline");
+        lastOnlineRef =FirebaseDatabase.getInstance().getReference("/FUI/"+memberEmail.replace(".", "_")+"/"+deviceId+"/lastOnline");
         lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         connectedRef.addValueEventListener(new ValueEventListener() {
@@ -400,7 +400,7 @@ public class DeviceQMSActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    final DatabaseReference  presenceRefF= FirebaseDatabase.getInstance().getReference("/friend/"+childSnapshot.getValue().toString().replace(".", "_")+"/"+deviceId+"/connection");//childSnapshot.getValue().toString():email
+                    final DatabaseReference  presenceRefF= FirebaseDatabase.getInstance().getReference("/FUI/"+childSnapshot.getValue().toString().replace(".", "_")+"/"+deviceId+"/connection");//childSnapshot.getValue().toString():email
                     presenceRefF.setValue(true);
                     presenceRefF.onDisconnect().setValue(null);
                     connectedRefF = FirebaseDatabase.getInstance().getReference(".info/connected");

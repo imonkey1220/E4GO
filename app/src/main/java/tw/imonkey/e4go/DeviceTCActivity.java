@@ -150,7 +150,7 @@ public class DeviceTCActivity extends AppCompatActivity {
         master = extras.getBoolean("master");
 
         if (master) {
-            mDevice = FirebaseDatabase.getInstance().getReference("/master/" + memberEmail.replace(".", "_") + "/" + deviceId);
+            mDevice = FirebaseDatabase.getInstance().getReference("/FUI/" + memberEmail.replace(".", "_") + "/" + deviceId);
             mDevice.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -169,7 +169,7 @@ public class DeviceTCActivity extends AppCompatActivity {
                 }
             });
         } else {
-            mDevice = FirebaseDatabase.getInstance().getReference("/friend/" + memberEmail.replace(".", "_") + "/" + deviceId);
+            mDevice = FirebaseDatabase.getInstance().getReference("/FUI/" + memberEmail.replace(".", "_") + "/" + deviceId);
             mDevice.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {

@@ -43,12 +43,12 @@ import java.util.TimeZone;
 
 public class MainActivity extends Activity {
 
-    ListView devicesMasterView,devicesFriendView;
-    DatabaseReference mDelMaster,mDelFriend, presenceRef,lastOnlineRef;
+    ListView devicesView;
+    DatabaseReference mDelDevice, presenceRef,lastOnlineRef;
     public static String memberEmail,myDeviceId,deviceId;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
-    FirebaseListAdapter mMasterAdapter,mFriendAdapter;
+    FirebaseListAdapter mDeviceAdapter;
     StorageReference mImageRef;
     public static final String devicePrefs = "devicePrefs";
     @Override
@@ -94,8 +94,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMasterAdapter.cleanup();
-        mFriendAdapter.cleanup();
+        mDeviceAdapter.cleanup();
     }
 
     private void memberCheck(){
@@ -122,11 +121,10 @@ public class MainActivity extends Activity {
     }
 
 
-
     private void getDevices(){
-        Query refMasterDevice = FirebaseDatabase.getInstance().getReference("/master/"+memberEmail.replace(".", "_")).orderByChild("companyId");
-        devicesMasterView = (ListView) findViewById(R.id.listViewDevicesM);
-        mMasterAdapter= new FirebaseListAdapter<Device>(this, Device.class,R.layout.listview_device_layout, refMasterDevice) {
+        Query refDevice = FirebaseDatabase.getInstance().getReference("/FUI/"+memberEmail.replace(".", "_")).orderByChild("companyId");
+        devicesView = (ListView) findViewById(R.id.listViewDevices);
+        mDeviceAdapter= new FirebaseListAdapter<Device>(this, Device.class,R.layout.listview_device_layout, refDevice) {
 
             @Override
             protected void populateView(View view, Device device, int position) {
@@ -137,6 +135,11 @@ public class MainActivity extends Activity {
                     } else {
                         ((TextView) view.findViewById(R.id.deviceName)).setText(device.getCompanyId() + "." + device.getDevice() + "." + "離線" + ":" + device.getDescription());
                     }
+
+                    if (device.getDeviceType().equals("主機")){
+                        ((TextView) view.findViewById(R.id.deviceName)).setText(device.getCompanyId() + "." + device.getDevice() + "." + "上線" + ":" + device.getDescription());
+                    }
+
                     String devicePhotoPath = "/devicePhoto/" + device.getTopics_id();
                     mImageRef = FirebaseStorage.getInstance().getReference(devicePhotoPath);
                     ImageView imageView = (ImageView) view.findViewById(R.id.deviceImage);
@@ -156,143 +159,50 @@ public class MainActivity extends Activity {
                         ((TextView) view.findViewById(R.id.deviceMessage)).setText("");
                     }
                 }
-
-
             }
         };
-        devicesMasterView.setAdapter(mMasterAdapter);
-        /*
-        if (mMasterAdapter.getCount()==0){
-            TextView masterTile =(TextView)findViewById(R.id.textViewMTitle);
-            masterTile.setVisibility(View.INVISIBLE);
-        }
-        */
-        devicesMasterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        devicesView.setAdapter(mDeviceAdapter);
+
+        devicesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                deviceId=mMasterAdapter.getRef(position).getKey();
-                mMasterAdapter.getRef(position).child("deviceType").addListenerForSingleValueEvent(new ValueEventListener() {
+                deviceId=mDeviceAdapter.getRef(position).getKey();
+                mDeviceAdapter.getRef(position).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        String deviceType=snapshot.getValue().toString();
+                        String deviceType=snapshot.child("deviceType").getValue().toString();
                         if (deviceType.equals("主機")) {
                             Intent intent = new Intent(MainActivity.this, DeviceBossActivity.class);
                             intent.putExtra("deviceId", deviceId);
                             intent.putExtra("memberEmail", memberEmail);
-                            intent.putExtra("master", true);
+                            if (snapshot.child("masterEmail").getValue().toString().equals(memberEmail)){
+                                intent.putExtra("master", true);
+                            }else{
+                                intent.putExtra("master", false);
+                            }
                             startActivity(intent);
                         }else if(deviceType.equals("取號機")){
                             Intent intent = new Intent(MainActivity.this, DeviceQMSActivity.class);
                             intent.putExtra("deviceId", deviceId);
                             intent.putExtra("memberEmail", memberEmail);
-                            intent.putExtra("master", true);
-                            startActivity(intent);
-                        }
-                        else if(deviceType.equals("打卡機")){
-                            Intent intent = new Intent(MainActivity.this, DeviceQMSActivity.class);
-                            intent.putExtra("deviceId", deviceId);
-                            intent.putExtra("memberEmail", memberEmail);
-                            intent.putExtra("master", true);
-                            startActivity(intent);
-                        }
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                    }
-                });
-            }
-        });
-        devicesMasterView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                //delDevice
-                final String deviceId=mMasterAdapter.getRef(position).getKey();
-                String company_device=((TextView)view.findViewById(R.id.deviceName)).getText().toString();
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-                alertDialog.setMessage("刪除智慧機:"+company_device);
-                alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDelMaster= FirebaseDatabase.getInstance().getReference("/master/" +memberEmail.replace(".", "_"));
-                        mDelMaster.child(deviceId).removeValue();
-                        FirebaseMessaging.getInstance().unsubscribeFromTopic(deviceId);
-                        dialog.cancel();
-                    }
-                });
-                alertDialog.show();
-                return true;
-            }
-        });
-
-        Query refFriendDevice = FirebaseDatabase.getInstance().getReference("/friend/"+memberEmail.replace(".", "_")).orderByChild("companyId");
-        devicesFriendView = (ListView) findViewById(R.id.listViewDevicesF);
-        mFriendAdapter= new FirebaseListAdapter<Device>(this, Device.class, R.layout.listview_device_layout, refFriendDevice) {
-
-            @Override
-            protected void populateView(View view, Device device, int position) {
-                if (device.getTopics_id()!=null && device.getCompanyId()!=null && device.getDevice()!=null) {
-                    FirebaseMessaging.getInstance().subscribeToTopic(device.getTopics_id());
-                    if (device.getConnection() != null) {
-                        ((TextView) view.findViewById(R.id.deviceName)).setText(device.getCompanyId() + "." + device.getDevice() + "." + "上線" + ":" + device.getDescription());
-                    } else {
-                        ((TextView) view.findViewById(R.id.deviceName)).setText(device.getCompanyId() + "." + device.getDevice() + "." + "離線" + ":" + device.getDescription());
-                    }
-                    if (device.getAlert().get("message") != null) {
-                        Calendar timeStamp = Calendar.getInstance();
-                        timeStamp.setTimeInMillis(Long.parseLong(device.getAlert().get("timeStamp").toString()));
-                        SimpleDateFormat df = new SimpleDateFormat("HH:mm MM/dd", Locale.TAIWAN);
-                        ((TextView) view.findViewById(R.id.deviceMessage)).setText(device.getAlert().get("message").toString() + "#" + df.format(timeStamp.getTime()));
-                    } else {
-                        ((TextView) view.findViewById(R.id.deviceMessage)).setText("");
-                    }
-
-                    String devicePhotoPath = "/devicePhoto/" + device.getTopics_id();
-                    mImageRef = FirebaseStorage.getInstance().getReference(devicePhotoPath);
-                    ImageView imageView = (ImageView) view.findViewById(R.id.deviceImage);
-                    Glide.with(MainActivity.this)
-                            .using(new FirebaseImageLoader())
-                            .load(mImageRef)
-                            .into(imageView);
-                    ((TextView) view.findViewById(R.id.deviceType)).setText(device.getDeviceType());
-                }
-            }
-        };
-
-        devicesFriendView.setAdapter(mFriendAdapter);
-        /*
-        if (devicesFriendView.getAdapter().getCount()==0){
-            TextView friendTile =(TextView)findViewById(R.id.textViewFTitle);
-            friendTile.setVisibility(View.INVISIBLE);
-        }
-        */
-
-        devicesFriendView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                deviceId=mFriendAdapter.getRef(position).getKey();
-                mFriendAdapter.getRef(position).child("deviceType").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        String deviceType=snapshot.getValue().toString();
-                        if (deviceType.equals("主機")) {
-                            Intent intent = new Intent(MainActivity.this, DeviceBossActivity.class);
-                            intent.putExtra("deviceId", deviceId);
-                            intent.putExtra("memberEmail", memberEmail);
-                           intent.putExtra("master", false);
-                            startActivity(intent);
-                        }else if(deviceType.equals("取號機")){
-                            Intent intent = new Intent(MainActivity.this, DeviceQMSActivity.class);
-                            intent.putExtra("deviceId", deviceId);
-                            intent.putExtra("memberEmail", memberEmail);
-                            intent.putExtra("master", false);
+                            if (snapshot.child("masterEmail").getValue().toString().equals(memberEmail)){
+                                intent.putExtra("master", true);
+                            }else{
+                                intent.putExtra("master", false);
+                            }
                             startActivity(intent);
                         }else if(deviceType.equals("打卡機")){
-                            Intent intent = new Intent(MainActivity.this, DeviceQMSActivity.class);
+                            Intent intent = new Intent(MainActivity.this, DeviceTCActivity.class);
                             intent.putExtra("deviceId", deviceId);
                             intent.putExtra("memberEmail", memberEmail);
-                            intent.putExtra("master", false);
+                            if (snapshot.child("masterEmail").getValue().toString().equals(memberEmail)){
+                                intent.putExtra("master", true);
+                            }else{
+                                intent.putExtra("master", false);
+                            }
                             startActivity(intent);
                         }
+
                     }
                     @Override
                     public void onCancelled(DatabaseError error) {
@@ -300,20 +210,19 @@ public class MainActivity extends Activity {
                 });
             }
         });
-
-        devicesFriendView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        devicesView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 //delDevice
-                final String deviceId=mFriendAdapter.getRef(position).getKey();
+                final String deviceId=mDeviceAdapter.getRef(position).getKey();
                 String company_device=((TextView)view.findViewById(R.id.deviceName)).getText().toString();
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
                 alertDialog.setMessage("刪除智慧機:"+company_device);
                 alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mDelFriend= FirebaseDatabase.getInstance().getReference("/friend/" +memberEmail.replace(".","_"));
-                        mDelFriend.child(deviceId).removeValue();
+                        mDelDevice= FirebaseDatabase.getInstance().getReference("/FUI/" +memberEmail.replace(".", "_"));
+                        mDelDevice.child(deviceId).removeValue();
                         FirebaseMessaging.getInstance().unsubscribeFromTopic(deviceId);
                         dialog.cancel();
                     }
@@ -322,31 +231,19 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-
-        refFriendDevice.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if(snapshot.getValue()==null){
-                    ViewGroup.LayoutParams params = devicesFriendView.getLayoutParams();
-                    params.height = 0;
-                    devicesFriendView.setLayoutParams(params);
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-            }
-        });
-
-
     }
+
+
+
+
 
     private void phoneOnline(){
         //phone online check
         // Write a string when this client loses connection
-        presenceRef = FirebaseDatabase.getInstance().getReference("/memberOnline/"+memberEmail.replace(".", "_")+"/connections");
+        presenceRef = FirebaseDatabase.getInstance().getReference("/USER/"+memberEmail.replace(".", "_")+"/connections");
         presenceRef.setValue(true);
         presenceRef.onDisconnect().setValue(null);
-        lastOnlineRef =FirebaseDatabase.getInstance().getReference("/memberOnline/"+memberEmail.replace(".", "_")+"/lastOnline");
+        lastOnlineRef =FirebaseDatabase.getInstance().getReference("/USER/"+memberEmail.replace(".", "_")+"/lastOnline");
         lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         connectedRef.addValueEventListener(new ValueEventListener() {

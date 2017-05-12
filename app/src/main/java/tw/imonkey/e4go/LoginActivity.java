@@ -19,9 +19,6 @@ public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     private FirebaseAuth auth;
     private static final int RC_SIGN_IN = 200;
-
-    String memberEmail,myDeviceId,token;//deviceId=topicId=ShopId
-    public static final String devicePrefs = "devicePrefs";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
             if(resultCode == RESULT_CANCELED){
                 displayMessage(getString(R.string.signin_failed));
             }
-            return;
         }else {
             displayMessage(getString(R.string.unknown_response));
         }
