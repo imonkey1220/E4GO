@@ -207,7 +207,7 @@ public class DeviceTCActivity extends AppCompatActivity {
                 @Override
                 public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                     TVAtWork1.setText("上班1\n"+ selectedHour + ":" + selectedMinute);
-                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/TC/"+deviceId+"/SERVER/AtWork1");
+                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId+"/SETTINGS/SERVER/AtWork1");
                     mTCServer.setValue(selectedHour + ":" + selectedMinute);
                 }
             }, hour, minute, true);//24 hour time
@@ -226,7 +226,7 @@ public class DeviceTCActivity extends AppCompatActivity {
                 @Override
                 public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                     TVAtWork2.setText("上班2\n"+ selectedHour + ":" + selectedMinute);
-                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/TC/"+deviceId+"/SERVER/AtWork2");
+                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId+"/SETTINGS/SERVER/AtWork2");
                     mTCServer.setValue(selectedHour + ":" + selectedMinute);
                 }
             }, hour, minute, true);//24 hour time
@@ -245,7 +245,7 @@ public class DeviceTCActivity extends AppCompatActivity {
                 @Override
                 public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                     TVOffWork1.setText("下班1\n"+ selectedHour + ":" + selectedMinute);
-                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/TC/"+deviceId+"/SERVER/OffWork1");
+                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId+"/SETTINGS/SERVER/OffWork1");
                     mTCServer.setValue(selectedHour + ":" + selectedMinute);
                 }
             }, hour, minute, true);//24 hour time
@@ -263,7 +263,7 @@ public class DeviceTCActivity extends AppCompatActivity {
                 @Override
                 public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                     TVOffWork2.setText("下班2\n"+ selectedHour + ":" + selectedMinute);
-                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/TC/"+deviceId+"/SERVER/OffWork2");
+                    DatabaseReference mTCServer=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId+"/SETTINGS/SERVER/OffWork2");
                     mTCServer.setValue(selectedHour + ":" + selectedMinute);
                 }
             }, hour, minute, true);//24 hour time
