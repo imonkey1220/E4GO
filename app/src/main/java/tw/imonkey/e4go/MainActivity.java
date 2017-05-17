@@ -147,16 +147,16 @@ public class MainActivity extends Activity {
                             .using(new FirebaseImageLoader())
                             .load(mImageRef)
                             .into(imageView);
-                    ((TextView) view.findViewById(R.id.deviceType)).setText(device.getDeviceType());
-
 
                     if (device.getAlert().get("message") != null) {
                         Calendar timeStamp = Calendar.getInstance();
                         timeStamp.setTimeInMillis(Long.parseLong(device.getAlert().get("timeStamp").toString()));
-                        SimpleDateFormat df = new SimpleDateFormat("HH:mm MM/dd", Locale.TAIWAN);
-                        ((TextView) view.findViewById(R.id.deviceMessage)).setText(device.getAlert().get("message").toString() + "\n" + df.format(timeStamp.getTime()));
+                        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss MM/dd", Locale.TAIWAN);
+                        ((TextView) view.findViewById(R.id.deviceMessage)).setText(device.getAlert().get("message").toString() );
+                        ((TextView) view.findViewById(R.id.deviceType)).setText(df.format(timeStamp.getTime())+"  "+device.getDeviceType());
                     } else {
                         ((TextView) view.findViewById(R.id.deviceMessage)).setText("");
+                        ((TextView) view.findViewById(R.id.deviceType)).setText(device.getDeviceType());
                     }
                 }
             }
