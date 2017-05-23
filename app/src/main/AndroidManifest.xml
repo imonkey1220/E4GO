@@ -72,6 +72,10 @@
         <activity
             android:name=".DevicePOINTSActivity"
             android:label="@string/title_activity_device_points"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".STAMPActivity"
+            android:label="@string/title_activity_stamp"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

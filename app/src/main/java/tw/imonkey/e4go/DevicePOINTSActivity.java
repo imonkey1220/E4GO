@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -19,9 +20,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DevicePOINTSActivity extends AppCompatActivity {
@@ -31,13 +35,14 @@ public class DevicePOINTSActivity extends AppCompatActivity {
     Map<String, Object> mPOINTSNo=new HashMap<>();
 
     public static final String devicePrefs = "devicePrefs";
-    DatabaseReference mFriends, mDevice;
+    DatabaseReference mFriends, mDevice , mPointChanged;
     String deviceId, memberEmail;
     Integer buyTimes=0;
     int ACT;
     boolean master;
     Spinner spBuyTimes;
     EditText ETDescription;
+    TextView TVChanged;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +54,8 @@ public class DevicePOINTSActivity extends AppCompatActivity {
         memberEmail = extras.getString("memberEmail");
         master = extras.getBoolean("master");
         ETDescription=(EditText) findViewById(R.id.editTextPOINTSDescription);
+        TVChanged=(TextView) findViewById(R.id.textViewChanged);
+
         mDevice=FirebaseDatabase.getInstance().getReference("/DEVICE/"+deviceId);
         mDevice.child("ACT").addValueEventListener(new ValueEventListener() {
             @Override
@@ -109,7 +116,20 @@ public class DevicePOINTSActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
+        mPointChanged=FirebaseDatabase.getInstance().getReference("/DEVICE/"+ deviceId+"/CHANGED");
+        mPointChanged.limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Calendar timeStamp = Calendar.getInstance();
+                timeStamp.setTimeInMillis(Long.parseLong((snapshot.child("timeStamp").getValue().toString())));
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss MM/dd", Locale.TAIWAN);
+                TVChanged.setText(snapshot.child("memberEmail").getValue().toString()+"@"+df.format(timeStamp.getTime()+"  兌換"));
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
             }
         });
 

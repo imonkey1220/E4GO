@@ -58,4 +58,5 @@
     <string name="title_activity_device0">商店管理</string>
     <string name="title_activity_device2">打卡機</string>
     <string name="title_activity_device_points">DevicePOINTSActivity</string>
+    <string name="title_activity_stamp">STAMPActivity</string>
 </resources>
